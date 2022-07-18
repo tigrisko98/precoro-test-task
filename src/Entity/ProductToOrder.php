@@ -9,6 +9,11 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(name: '`products_to_orders`')]
 class ProductToOrder
 {
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column()]
+    private ?int $id = null;
+
     #[ORM\ManyToOne(inversedBy: 'productToOrders')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Product $product = null;
@@ -22,6 +27,11 @@ class ProductToOrder
 
     #[ORM\Column]
     private ?float $product_price = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
     public function getProduct(): ?Product
     {
