@@ -41,7 +41,7 @@
         <div class="container">
             <h1 class="mt-1">&nbsp;</h1>
             {% for message in app.flashes('notice') %}
-                <div class="flash-notice">
+                <div class="flash-notice alert alert-success" role="alert">
                     {{ message }}
                 </div>
             {% endfor %}
@@ -53,3 +53,4 @@
 </div>
 </body>
 </html>
+
