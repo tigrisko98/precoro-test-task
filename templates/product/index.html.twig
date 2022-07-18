@@ -17,10 +17,15 @@
                                 <a class="text-dark" href="#">{{ product.name }}</a>
                             </h3>
                             <p class="card-text mb-auto">{{ product.price }} грн</p>
-                            <p class="card-text mb-auto"><a class="btn-outline-primary"
-                                                            href="/product/{{ product.id }}/update">Update</a></p>
-                            <p class="card-text mb-auto"><a class="btn-outline-danger" data-id="{{ product.id }}"
-                                                            href="">Delete</a></p>
+                            <p class="card-text mb-auto">
+                                <a class="btn-outline-primary" href="/product/{{ product.id }}/update">Update</a>
+                            </p>
+                            <p class="card-text mb-auto">
+                                <a onclick="deleteProduct({{ product.id }})" class="btn-outline-danger" data-id="{{ product.id }}" href="">Delete</a>
+                            </p>
+                            <p class="card-text mb-auto">
+                                <button onclick="addProductToCart({{ product.id }}); getCardQuantity()" class="btn btn-outline-success">To cart</button>
+                            </p>
                         </div>
                         <a href="#">
                             <img width="100" height="100%" class="card-img-right flex-auto d-none d-md-block"
@@ -33,7 +38,9 @@
         </div>
     </div>
     {% block script %}
-        <script type="application/javascript" src="/js/delete_product.js"></script>
+        <script src="/js/delete_product.js"></script>
+        <script src="/js/get_cart_quantity.js"></script>
+        <script src="/js/add_product_to_cart.js"></script>
     {% endblock %}
 {% endblock %}
 
