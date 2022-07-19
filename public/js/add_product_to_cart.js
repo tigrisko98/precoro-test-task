@@ -1,6 +1,6 @@
 function addProductToCart(id) {
     let cartQuantityEl = document.getElementById('cart-quantity');
-    let cartEl = document.getElementById('add-to-cart');
+    let cartEl = document.getElementById(`add-to-cart-${id}`);
     let formData = new FormData();
     let quantityEl = document.getElementById(`quantity-${id}`);
     let quantity = 1;
@@ -18,8 +18,8 @@ function addProductToCart(id) {
             cartQuantityEl.textContent = ` (${responseData})`;
             cartEl.classList.remove('btn-outline-success');
             cartEl.removeAttribute('onclick');
-            cartEl.href = ('/cart')
             cartEl.classList.add('btn-success');
+            cartEl.href = ('/cart')
             cartEl.textContent = 'In cart';
         });
 }
