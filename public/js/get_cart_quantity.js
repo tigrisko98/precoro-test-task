@@ -8,4 +8,3 @@ function getCardQuantity() {
             cartEl.textContent = ` (${responseData})`;
         });
 }
-

@@ -1,20 +1,41 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello CartController!{% endblock %}
-
+{% block title %}Cart{% endblock %}
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
-
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
-
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code><a href="{{ '/home/kostiantyn/var/www/precoro-test-task/src/Controller/CartController.php'|file_link(0) }}">src/Controller/CartController.php</a></code></li>
-        <li>Your template at <code><a href="{{ '/home/kostiantyn/var/www/precoro-test-task/templates/cart/index.html.twig'|file_link(0) }}">templates/cart/index.html.twig</a></code></li>
-    </ul>
-</div>
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Name</th>
+            <th scope="col">Price</th>
+            <th scope="col">Quantity</th>
+            <th scope="col"></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for product in products %}
+            <tr>
+                <th scope="row">{{ product.id }}</th>
+                <td>{{ product.name }}</td>
+                <td>{{ product.price }}</td>
+                <td>
+                    <button id="decrement-{{ product.id }}"
+                            onclick="decrement({{ product.id }}); addProductToCart({{ product.id }})"
+                            class="decrement" data-quantity="{{ productsInCart[product.id] }}">-
+                    </button>
+                    <span id="quantity-{{ product.id }}">{{ productsInCart[product.id] }}</span>
+                    <button onclick="increment({{ product.id }}); addProductToCart({{ product.id }})">+</button>
+                </td>
+                <td>
+                    <button class="btn btn-danger" onclick="deleteProductFromCart({{ product.id }})">Delete</button>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% block javascripts %}
+        <script src="/js/change_quantity.js"></script>
+        <script src="/js/disable_decrementor.js"></script>
+        <script src="/js/delete_product_from_cart.js"></script>
+    {% endblock %}
 {% endblock %}
