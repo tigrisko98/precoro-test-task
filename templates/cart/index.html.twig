@@ -34,7 +34,10 @@
         </tbody>
     </table>
     <p>Total Price: {{ total_price }} грн</p>
-    <a class="btn btn-primary" href="/order/create">Create order</a>
+    {% if products_in_cart is not empty%}
+        <a class="btn btn-primary" href="/order/create">Create order</a>
+    {% endif %}
+    <a class="btn btn-danger" href="/cart/clear">Clear cart</a>
     {% block javascripts %}
         <script src="/js/change_quantity.js"></script>
         <script src="/js/disable_decrementor.js"></script>

@@ -14,24 +14,26 @@ use Doctrine\Persistence\ManagerRegistry;
 
 class CartController extends AbstractController
 {
-    private $requestStack;
+    private ManagerRegistry $doctrine;
+    private ProductsInCartSession $productsSessionHelper;
 
-    public function __construct(RequestStack $requestStack)
+    public function __construct(ManagerRegistry $doctrine, ProductsInCartSession $productsSessionHelper)
     {
-        $this->requestStack = $requestStack;
+        $this->doctrine = $doctrine;
+        $this->productsSessionHelper = $productsSessionHelper;
     }
 
-    #[Route('/cart', name: 'app_cart')]
-    public function index(ManagerRegistry $doctrine, ProductsInCartSession $productsInCartSession): Response
+    #[Route('/cart', name: 'cart')]
+    public function index(): Response
     {
-        $productsInCart = $productsInCartSession->get();
+        $productsInCart = $this->productsSessionHelper->get();
         $products = [];
         $totalPrice = 0;
 
         if (!empty($productsInCart)) {
             $productsIds = array_keys($productsInCart);
-            $products = $doctrine->getRepository(Product::class)->findBy(['id' => $productsIds]);
-            $totalPrice = $this->getTotalPrice($doctrine, $productsInCartSession);
+            $products = $this->doctrine->getRepository(Product::class)->findBy(['id' => $productsIds]);
+            $totalPrice = $this->getTotalPrice();
         }
 
         return $this->render('cart/index.html.twig', [
@@ -43,9 +45,9 @@ class CartController extends AbstractController
     }
 
     #[Route('/cart/add/{id}', name: 'cart_add')]
-    public function add(Product $product, Request $request, ProductsInCartSession $productsInCartSession)
+    public function add(Product $product, Request $request)
     {
-        $productsInCart = $productsInCartSession->get();
+        $productsInCart = $this->productsSessionHelper->get();
         $quantity = 1;
 
         if ($request->get('quantity')) {
@@ -53,7 +55,7 @@ class CartController extends AbstractController
         }
 
         $productsInCart[$product->getId()] = $quantity;
-        $productsInCartSession->set($productsInCart);
+        $this->productsSessionHelper->set($productsInCart);
 
         return $this->getQuantity();
     }
@@ -61,7 +63,7 @@ class CartController extends AbstractController
     #[Route('/cart/get-quantity', name: 'cart_get-quantity')]
     public function getQuantity()
     {
-        $productsInCart = (new ProductsInCartSession($this->requestStack))->get();
+        $productsInCart = $this->productsSessionHelper->get();
         $productsInCartCount = 0;
 
         foreach ($productsInCart as $productId => $productQuantity) {
@@ -72,9 +74,9 @@ class CartController extends AbstractController
     }
 
     #[Route('/cart/is-product-in-cart/{id}', name: 'cart/is-product-in-cart')]
-    public function isProductInCart($id, ProductsInCartSession $productsInCartSession)
+    public function isProductInCart($id)
     {
-        if (array_key_exists($id, $productsInCartSession->get())) {
+        if (array_key_exists($id, $this->productsSessionHelper->get())) {
             return new Response(true);
         }
 
@@ -84,12 +86,11 @@ class CartController extends AbstractController
     #[Route('/cart/delete/{id}', name: 'cart/delete')]
     public function deleteProduct($id)
     {
-        $productsInCartSession = new ProductsInCartSession($this->requestStack);
-        $productsInCart = $productsInCartSession->get();
+        $productsInCart = $this->productsSessionHelper->get();
 
         if (!empty($productsInCart) && in_array($id, array_keys($productsInCart))) {
             unset($productsInCart[$id]);
-            $productsInCartSession->set($productsInCart);
+            $this->productsSessionHelper->set($productsInCart);
 
             return new Response('Success');
         }
@@ -98,9 +99,18 @@ class CartController extends AbstractController
     }
 
     #[Route('/cart/get-total-price', name: 'cart/get-total-price')]
-    public function getTotalPrice(ManagerRegistry $doctrine, ProductsInCartSession $productsInCartSession)
+    public function getTotalPrice()
     {
-        return $productsInCartSession->getTotalPrice($doctrine);
+        return $this->productsSessionHelper->getTotalPrice($this->doctrine);
+
+    }
+
+    #[Route('/cart/clear', name: 'cart/clear')]
+    public function clear()
+    {
+        $this->productsSessionHelper->clear();
+
+        return $this->redirectToRoute('cart');
 
     }
 }

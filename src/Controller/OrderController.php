@@ -13,33 +13,46 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Repository\ProductRepository;
 
 class OrderController extends AbstractController
 {
-    #[Route('/order', name: 'app_order')]
+    private ProductRepository $productRepository;
+    private ManagerRegistry $doctrine;
+    private ProductsInCartSession $productsSessionHelper;
+
+    public function __construct(ProductRepository $productRepository, ManagerRegistry $doctrine, ProductsInCartSession $productsSessionHelper)
+    {
+        $this->productRepository = $productRepository;
+        $this->doctrine = $doctrine;
+        $this->productsSessionHelper = $productsSessionHelper;
+    }
+
+    #[Route('/orders', name: 'orders')]
     public function index(): Response
     {
+        $entityManager = $this->doctrine->getManager();
+        $order = $entityManager->getRepository(Order::class)->find(8);
+        dd($order);
         return $this->render('order/index.html.twig', [
             'controller_name' => 'OrderController',
         ]);
     }
 
     #[Route('/order/create', name: 'order_create')]
-    public function create(ManagerRegistry $doctrine, Request $request, ProductsInCartSession $productsInCartSession): Response
+    public function create(Request $request): Response
     {
-        $productsInCart = $productsInCartSession->get();
-        $productsIds = array_keys($productsInCart);
-        $products = $doctrine->getRepository(Product::class)->findBy(['id' => $productsIds]);
+        $productsInCart = $this->productsSessionHelper->get();
+        $products = $this->productRepository->getProductsFromSessionById($productsInCart);
 
         $user = new User();
         $order = new Order();
 
         $form = $this->createForm(OrderFormType::class, $order);
-
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager = $doctrine->getManager();
+            $entityManager = $this->doctrine->getManager();
             $user->setName($request->get('order_form')['user']);
             $entityManager->persist($user);
             $entityManager->flush();
@@ -61,9 +74,11 @@ class OrderController extends AbstractController
             $entityManager->persist($order);
             $entityManager->flush();
 
+            $this->productsSessionHelper->clear();
+
             $this->addFlash(
                 'notice',
-                "Order has been added."
+                "Order has been created."
             );
 
             return $this->redirectToRoute('products');

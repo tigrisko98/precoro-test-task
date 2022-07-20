@@ -16,8 +16,11 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class ProductRepository extends ServiceEntityRepository
 {
+    private ManagerRegistry $registry;
+
     public function __construct(ManagerRegistry $registry)
     {
+        $this->registry = $registry;
         parent::__construct($registry, Product::class);
     }
 
@@ -37,6 +40,12 @@ class ProductRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+    }
+
+    public function getProductsFromSessionById(array $productsInCart): array
+    {
+        $productsIds = array_keys($productsInCart);
+        return $this->registry->getRepository(Product::class)->findBy(['id' => $productsIds]);
     }
 
 //    /**

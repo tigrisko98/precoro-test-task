@@ -3,20 +3,30 @@
 namespace App\Controller;
 
 use App\Entity\Product;
+use App\Entity\ProductToOrder;
 use App\Form\ProductFormType;
+use App\Helper\ProductsInCartSession;
+use App\Repository\ProductRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Controller\CartController;
+use App\Repository\ProductToOrderRepository;
 
 class ProductController extends AbstractController
 {
-    #[Route('/products', name: 'products')]
-    public function index(ManagerRegistry $doctrine)
+    private $doctrine;
+
+    public function __construct(ManagerRegistry $doctrine)
     {
-        $products = $doctrine->getRepository(Product::class)->findAll();
+        $this->doctrine = $doctrine;
+    }
+
+    #[Route('/products', name: 'products')]
+    public function index()
+    {
+        $products = $this->doctrine->getRepository(Product::class)->findAll();
 
         return $this->render('product/index.html.twig', [
             'controller_name' => 'ProductController',
@@ -25,7 +35,7 @@ class ProductController extends AbstractController
     }
 
     #[Route('/product/create', name: 'product_create')]
-    public function create(Request $request, ManagerRegistry $doctrine)
+    public function create(Request $request)
     {
         $product = new Product();
 
@@ -33,7 +43,7 @@ class ProductController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager = $doctrine->getManager();
+            $entityManager = $this->doctrine->getManager();
             $entityManager->persist($product);
             $entityManager->flush();
 
@@ -53,13 +63,13 @@ class ProductController extends AbstractController
     }
 
     #[Route('/product/{id}/update', name: 'product_update')]
-    public function update(Product $product, Request $request, ManagerRegistry $doctrine)
+    public function update(Product $product, Request $request)
     {
         $form = $this->createForm(ProductFormType::class, $product);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager = $doctrine->getManager();
+            $entityManager = $this->doctrine->getManager();
             $entityManager->persist($product);
             $entityManager->flush();
 
@@ -81,9 +91,15 @@ class ProductController extends AbstractController
     }
 
     #[Route('/product/{id}/delete', name: 'product_delete')]
-    public function delete(Product $product, ManagerRegistry $doctrine)
+    public function delete(Product $product)
     {
-        $entityManager = $doctrine->getManager();
+        $entityManager = $this->doctrine->getManager();
+        $productsToOrder = $entityManager->getRepository(ProductToOrder::class)->findBy(['product' => $product->getId()]);
+
+        foreach ($productsToOrder as $prod) {
+            $entityManager->remove($prod);
+        }
+
         $entityManager->remove($product);
         $entityManager->flush();
 

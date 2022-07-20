@@ -5,17 +5,19 @@ namespace App\Helper;
 use App\Entity\Product;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Component\Routing\Annotation\Route;
+use App\Repository\ProductRepository;
 
 class ProductsInCartSession
 {
     private $requestStack;
+    private $productRepository;
 
     private const SESSION_NAME = 'products';
 
-    public function __construct(RequestStack $requestStack)
+    public function __construct(RequestStack $requestStack, ProductRepository $productRepository)
     {
         $this->requestStack = $requestStack;
+        $this->productRepository = $productRepository;
     }
 
     public function get()
@@ -29,18 +31,17 @@ class ProductsInCartSession
         return [];
     }
 
-    public function set($products)
+    public function set(array $products)
     {
         $session = $this->requestStack->getSession();
 
         return $session->set(self::SESSION_NAME, $products);
     }
 
-    public function getTotalPrice(ManagerRegistry $doctrine)
+    public function getTotalPrice(ManagerRegistry $doctrine): int|float
     {
         $productsInCart = $this->get();
-        $productsIds = array_keys($productsInCart);
-        $products = $doctrine->getRepository(Product::class)->findBy(['id' => $productsIds]);
+        $products = $this->productRepository->getProductsFromSessionById($productsInCart);
         $totalPrice = 0;
 
         foreach ($products as $product) {
@@ -48,5 +49,12 @@ class ProductsInCartSession
         }
 
         return $totalPrice;
+    }
+
+    public function clear()
+    {
+        $session = $this->requestStack->getSession();
+
+        return $session->remove(self::SESSION_NAME);
     }
 }
