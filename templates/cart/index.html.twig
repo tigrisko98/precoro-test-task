@@ -21,9 +21,9 @@
                 <td>
                     <button id="decrement-{{ product.id }}"
                             onclick="decrement({{ product.id }}); addProductToCart({{ product.id }})"
-                            class="decrement" data-quantity="{{ productsInCart[product.id] }}">-
+                            class="decrement" data-quantity="{{ products_in_cart[product.id] }}">-
                     </button>
-                    <span id="quantity-{{ product.id }}">{{ productsInCart[product.id] }}</span>
+                    <span id="quantity-{{ product.id }}">{{ products_in_cart[product.id] }}</span>
                     <button onclick="increment({{ product.id }}); addProductToCart({{ product.id }})">+</button>
                 </td>
                 <td>
@@ -33,6 +33,8 @@
         {% endfor %}
         </tbody>
     </table>
+    <p>Total Price: {{ total_price }} грн</p>
+    <a class="btn btn-primary" href="/order/create">Create order</a>
     {% block javascripts %}
         <script src="/js/change_quantity.js"></script>
         <script src="/js/disable_decrementor.js"></script>

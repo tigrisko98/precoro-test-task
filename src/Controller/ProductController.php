@@ -47,7 +47,7 @@ class ProductController extends AbstractController
 
         return $this->render('product/create.html.twig', [
             'controller_name' => 'ProductController',
-            'create_product_form' => $form->createView()
+            'product_form' => $form->createView()
         ]);
 
     }
@@ -75,7 +75,7 @@ class ProductController extends AbstractController
 
         return $this->render('product/update.html.twig', [
             'controller_name' => 'ProductController',
-            'create_product_form' => $form->createView()
+            'product_form' => $form->createView()
         ]);
 
     }
@@ -87,7 +87,7 @@ class ProductController extends AbstractController
         $entityManager->remove($product);
         $entityManager->flush();
 
-        return $this->redirectToRoute('products');
+        return new Response('Success');
     }
 
     #[Route('/product/{id}', name: 'product_view')]

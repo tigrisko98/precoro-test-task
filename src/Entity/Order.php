@@ -16,9 +16,8 @@ class Order
     #[ORM\Column()]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'orders')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?User $user = null;
+    #[ORM\Column()]
+    private $user_id = null;
 
     #[ORM\OneToMany(mappedBy: 'order_id', targetEntity: ProductToOrder::class)]
     private Collection $productToOrders;
@@ -33,14 +32,14 @@ class Order
         return $this->id;
     }
 
-    public function getUser(): ?User
+    public function getUser()
     {
-        return $this->user;
+        return $this->user_id;
     }
 
-    public function setUser(?User $user): self
+    public function setUser($user_id): self
     {
-        $this->user = $user;
+        $this->user_id = $user_id;
 
         return $this;
     }
@@ -57,7 +56,7 @@ class Order
     {
         if (!$this->productToOrders->contains($productToOrder)) {
             $this->productToOrders[] = $productToOrder;
-            $productToOrder->setOrderId($this);
+            $productToOrder->setOrderId($this->getId());
         }
 
         return $this;
