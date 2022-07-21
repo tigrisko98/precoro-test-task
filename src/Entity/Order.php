@@ -22,9 +22,16 @@ class Order
     #[ORM\OneToMany(mappedBy: 'order', targetEntity: ProductToOrder::class)]
     private Collection $productToOrders;
 
+    #[ORM\Column]
+    private ?float $total_price = null;
+
+    #[ORM\Column]
+    private ?\DateTimeImmutable $created_at;
+
     public function __construct()
     {
         $this->productToOrders = new ArrayCollection();
+        $this->created_at = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -70,6 +77,30 @@ class Order
                 $productToOrder->setOrder(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getTotalPrice(): ?float
+    {
+        return $this->total_price;
+    }
+
+    public function setTotalPrice(float $total_price): self
+    {
+        $this->total_price = $total_price;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->created_at;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $created_at): self
+    {
+        $this->created_at = $created_at;
 
         return $this;
     }

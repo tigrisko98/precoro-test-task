@@ -32,7 +32,7 @@ class OrderController extends AbstractController
     public function index(): Response
     {
         $entityManager = $this->doctrine->getManager();
-        $order = $entityManager->getRepository(Order::class)->find(61);
+        $order = $entityManager->getRepository(Order::class)->find(1);
         dd($order);
         return $this->render('order/index.html.twig', [
             'controller_name' => 'OrderController',
@@ -64,7 +64,7 @@ class OrderController extends AbstractController
             $entityManager->flush($user);
 
             $order->setUser($user->getId());
-            $entityManager->persist($order);
+            $order->setTotalPrice($totalPrice);
 
             foreach ($products as $product) {
                 $productToOrder = new ProductToOrder();
@@ -76,6 +76,7 @@ class OrderController extends AbstractController
                 $order->addProductToOrder($productToOrder);
             }
 
+            $entityManager->persist($order);
             $entityManager->flush();
             $this->productsSessionHelper->clear();
 
