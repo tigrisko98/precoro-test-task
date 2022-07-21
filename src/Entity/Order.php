@@ -26,7 +26,7 @@ class Order
     private ?float $total_price = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $created_at;
+    private \DateTimeImmutable $created_at;
 
     public function __construct()
     {
@@ -93,9 +93,9 @@ class Order
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt()
     {
-        return $this->created_at;
+        return $this->created_at->format('Y-m-d H:i:s');
     }
 
     public function setCreatedAt(\DateTimeImmutable $created_at): self

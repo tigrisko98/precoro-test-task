@@ -32,10 +32,11 @@ class OrderController extends AbstractController
     public function index(): Response
     {
         $entityManager = $this->doctrine->getManager();
-        $order = $entityManager->getRepository(Order::class)->find(1);
-        dd($order);
+        $orders = $entityManager->getRepository(Order::class)->findAll();
+
         return $this->render('order/index.html.twig', [
             'controller_name' => 'OrderController',
+            'orders' => $orders
         ]);
     }
 
