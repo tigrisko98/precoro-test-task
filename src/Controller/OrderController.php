@@ -74,7 +74,6 @@ class OrderController extends AbstractController
                 $productToOrder->setQuantity($productsInCart[$product->getId()]);
                 $productToOrder->setProductPrice($product->getPrice());
                 $entityManager->persist($productToOrder);
-                $order->addProductToOrder($productToOrder);
             }
 
             $entityManager->persist($order);
@@ -93,6 +92,18 @@ class OrderController extends AbstractController
             'controller_name' => 'OrderController',
             'total_price' => $totalPrice,
             'order_form' => $form->createView()
+        ]);
+    }
+
+    #[Route('/order/{id}', name: 'order_view')]
+    public function view(Order $order)
+    {
+        $orderProducts = $order->getProductToOrders();
+
+        return $this->render('order/view.html.twig', [
+            'controller_name' => 'OrderController',
+            'order' => $order,
+            'orderProducts' => $orderProducts
         ]);
     }
 }

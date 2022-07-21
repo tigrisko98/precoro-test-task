@@ -19,7 +19,7 @@ class Order
     #[ORM\Column()]
     private $user_id = null;
 
-    #[ORM\OneToMany(mappedBy: 'order', targetEntity: ProductToOrder::class)]
+    #[ORM\OneToMany(mappedBy: 'order', targetEntity: ProductToOrder::class, fetch: 'EAGER')]
     private Collection $productToOrders;
 
     #[ORM\Column]
@@ -54,7 +54,7 @@ class Order
     /**
      * @return Collection<int, ProductToOrder>
      */
-    public function getProductToOrders(): Collection
+    public function getProductToOrders()
     {
         return $this->productToOrders;
     }

@@ -94,10 +94,10 @@ class ProductController extends AbstractController
     public function delete(Product $product)
     {
         $entityManager = $this->doctrine->getManager();
-        $productsToOrder = $entityManager->getRepository(ProductToOrder::class)->findBy(['product' => $product->getId()]);
+        $productsToOrder = $product->getProductToOrders();
 
-        foreach ($productsToOrder as $prod) {
-            $entityManager->remove($prod);
+        foreach ($productsToOrder as $productToOrder) {
+            $entityManager->remove($productToOrder);
         }
 
         $entityManager->remove($product);
@@ -114,5 +114,4 @@ class ProductController extends AbstractController
             'product' => $product
         ]);
     }
-
 }
