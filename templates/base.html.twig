@@ -16,11 +16,12 @@
     <script src="/js/get_cart_quantity.js"></script>
     <script src="/js/add_product_to_cart.js"></script>
     <script src="/js/is_products_in_cart.js"></script>
+    <script src="/js/recalculate_total_price.js"></script>
     <link rel="icon"
           href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
 
 </head>
-<body onload="getCardQuantity(); isProductsInCart(); disableDecrementor()">
+<body onload="getCardQuantity(); isProductsInCart(); disableDecrementor(); recalculateTotalPrice()">
 <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
     <a class="navbar-brand" href="#">Navbar</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"

@@ -101,8 +101,7 @@ class CartController extends AbstractController
     #[Route('/cart/get-total-price', name: 'cart/get-total-price')]
     public function getTotalPrice()
     {
-        return $this->productsSessionHelper->getTotalPrice($this->doctrine);
-
+        return new Response($this->productsSessionHelper->getTotalPrice());
     }
 
     #[Route('/cart/clear', name: 'cart/clear')]

@@ -20,11 +20,11 @@
                 <td>{{ product.price }}</td>
                 <td>
                     <button id="decrement-{{ product.id }}"
-                            onclick="decrement({{ product.id }}); addProductToCart({{ product.id }})"
+                            onclick="decrement({{ product.id }}); addProductToCart({{ product.id }}); recalculateTotalPrice()"
                             class="decrement" data-quantity="{{ products_in_cart[product.id] }}">-
                     </button>
                     <span id="quantity-{{ product.id }}">{{ products_in_cart[product.id] }}</span>
-                    <button onclick="increment({{ product.id }}); addProductToCart({{ product.id }})">+</button>
+                    <button onclick="increment({{ product.id }}); addProductToCart({{ product.id }}); recalculateTotalPrice()">+</button>
                 </td>
                 <td>
                     <button class="btn btn-danger" onclick="deleteProductFromCart({{ product.id }})">Delete</button>
@@ -33,7 +33,7 @@
         {% endfor %}
         </tbody>
     </table>
-    <p>Total Price: <strong>{{ total_price }}</strong> uah</p>
+    <p>Total Price: <strong><span id="total-price">{{ total_price }}</span></strong> uah</p>
     {% if products_in_cart is not empty%}
         <a class="btn btn-primary" href="/order/create">Create order</a>
     {% endif %}
