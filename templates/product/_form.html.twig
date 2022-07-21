@@ -1,5 +1,5 @@
 {{ form_start(product_form) }}
     {{ form_row(product_form.name) }}
-    {{ form_row(product_form.price) }}
+    {{ form_row(product_form.price, { 'label': 'Price (uah)' }) }}
 <button type="submit" class="btn btn-primary">{{ button_text }}</button>
 {{ form_end(product_form) }}

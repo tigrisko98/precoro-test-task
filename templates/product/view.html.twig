@@ -9,9 +9,9 @@
              alt="Card image cap">
         <div class="card-body">
             <h5 class="card-title">{{ product.name }}</h5>
-            <p class="card-text">{{ product.price }} грн.</p>
+            <p class="card-text">{{ product.price }} uah</p>
             <p class="card-text">
-                <a id="add-to-cart" data-id="{{ product.id }}"
+                <a id="add-to-cart-{{ product.id }}" data-id="{{ product.id }}"
                    onclick="addProductToCart({{ product.id }})" class="btn btn-outline-success">To cart
                 </a>
             </p>

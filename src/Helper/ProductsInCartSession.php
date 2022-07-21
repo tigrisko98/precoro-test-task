@@ -2,15 +2,13 @@
 
 namespace App\Helper;
 
-use App\Entity\Product;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Doctrine\Persistence\ManagerRegistry;
 use App\Repository\ProductRepository;
 
 class ProductsInCartSession
 {
-    private $requestStack;
-    private $productRepository;
+    private RequestStack $requestStack;
+    private ProductRepository $productRepository;
 
     private const SESSION_NAME = 'products';
 
@@ -38,7 +36,7 @@ class ProductsInCartSession
         return $session->set(self::SESSION_NAME, $products);
     }
 
-    public function getTotalPrice(ManagerRegistry $doctrine): int|float
+    public function getTotalPrice(): int|float
     {
         $productsInCart = $this->get();
         $products = $this->productRepository->getProductsFromSessionById($productsInCart);

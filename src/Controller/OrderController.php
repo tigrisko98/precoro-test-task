@@ -32,7 +32,7 @@ class OrderController extends AbstractController
     public function index(): Response
     {
         $entityManager = $this->doctrine->getManager();
-        $order = $entityManager->getRepository(Order::class)->find(8);
+        $order = $entityManager->getRepository(Order::class)->find(61);
         dd($order);
         return $this->render('order/index.html.twig', [
             'controller_name' => 'OrderController',
@@ -43,7 +43,13 @@ class OrderController extends AbstractController
     public function create(Request $request): Response
     {
         $productsInCart = $this->productsSessionHelper->get();
+
+        if (empty($productsInCart)) {
+            return new Response('There are no products in cart.');
+        }
+
         $products = $this->productRepository->getProductsFromSessionById($productsInCart);
+        $totalPrice = $this->productsSessionHelper->getTotalPrice();
 
         $user = new User();
         $order = new Order();
@@ -55,25 +61,22 @@ class OrderController extends AbstractController
             $entityManager = $this->doctrine->getManager();
             $user->setName($request->get('order_form')['user']);
             $entityManager->persist($user);
-            $entityManager->flush();
+            $entityManager->flush($user);
 
             $order->setUser($user->getId());
             $entityManager->persist($order);
-            $entityManager->flush();
 
             foreach ($products as $product) {
                 $productToOrder = new ProductToOrder();
                 $productToOrder->setProduct($product);
-                $productToOrder->setOrderId($order->getId());
+                $productToOrder->setOrder($order);
                 $productToOrder->setQuantity($productsInCart[$product->getId()]);
                 $productToOrder->setProductPrice($product->getPrice());
-                $order->addProductToOrder($productToOrder);
                 $entityManager->persist($productToOrder);
+                $order->addProductToOrder($productToOrder);
             }
 
-            $entityManager->persist($order);
             $entityManager->flush();
-
             $this->productsSessionHelper->clear();
 
             $this->addFlash(
@@ -86,6 +89,7 @@ class OrderController extends AbstractController
 
         return $this->render('order/create.html.twig', [
             'controller_name' => 'OrderController',
+            'total_price' => $totalPrice,
             'order_form' => $form->createView()
         ]);
     }

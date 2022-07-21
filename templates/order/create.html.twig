@@ -3,5 +3,6 @@
 {% block title %}Create order{% endblock %}
 
 {% block body %}
+    <p>Items in the cart for the amount: <strong>{{ total_price }}</strong> uah</p>
     {{ form(order_form) }}
 {% endblock %}

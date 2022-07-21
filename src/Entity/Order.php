@@ -19,7 +19,7 @@ class Order
     #[ORM\Column()]
     private $user_id = null;
 
-    #[ORM\OneToMany(mappedBy: 'order_id', targetEntity: ProductToOrder::class)]
+    #[ORM\OneToMany(mappedBy: 'order', targetEntity: ProductToOrder::class)]
     private Collection $productToOrders;
 
     public function __construct()
@@ -56,7 +56,7 @@ class Order
     {
         if (!$this->productToOrders->contains($productToOrder)) {
             $this->productToOrders[] = $productToOrder;
-            $productToOrder->setOrderId($this->getId());
+            $productToOrder->setOrder($this);
         }
 
         return $this;
@@ -66,8 +66,8 @@ class Order
     {
         if ($this->productToOrders->removeElement($productToOrder)) {
             // set the owning side to null (unless already changed)
-            if ($productToOrder->getOrderId() === $this) {
-                $productToOrder->setOrderId(null);
+            if ($productToOrder->getOrder() === $this) {
+                $productToOrder->setOrder(null);
             }
         }
 
