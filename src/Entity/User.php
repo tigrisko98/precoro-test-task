@@ -21,7 +21,7 @@ class User
     #[NotBlank]
     private ?string $name = null;
 
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Order::class)]
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Order::class, fetch: 'EAGER')]
     private Collection $orders;
 
     public function __construct()

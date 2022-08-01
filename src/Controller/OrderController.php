@@ -55,16 +55,15 @@ class OrderController extends AbstractController
         $user = new User();
         $order = new Order();
 
-        $form = $this->createForm(OrderFormType::class, $order);
+        $form = $this->createForm(OrderFormType::class);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->doctrine->getManager();
-            $user->setName($request->get('order_form')['user']);
             $entityManager->persist($user);
-            $entityManager->flush($user);
+            $user->setName($form->getData()->getUser()->getName());
 
-            $order->setUser($user->getId());
+            $order->setUser($user);
             $order->setTotalPrice($totalPrice);
 
             foreach ($products as $product) {
@@ -99,6 +98,7 @@ class OrderController extends AbstractController
     public function view(Order $order)
     {
         $orderProducts = $order->getProductToOrders();
+        $user = $order->getUser();
 
         return $this->render('order/view.html.twig', [
             'controller_name' => 'OrderController',

@@ -14,6 +14,7 @@
                             </h3>
                             <p class="card-text mb-auto">Total price: <strong>{{ order.getTotalPrice() }}</strong> uah</p>
                             <p class="card-text mb-auto">Created: {{ order.getCreatedAt() }}</p>
+                            <p class="card-text mb-auto">User: {{ order.getUser().getName() }}</p>
                         </div>
                         <a href="/order/{{ order.id }}">
                             <img width="100" height="100%" class="card-img-right flex-auto d-none d-md-block"
@@ -26,3 +27,4 @@
         </div>
     </div>
 {% endblock %}
+
